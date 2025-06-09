@@ -1,6 +1,8 @@
+import '@opentelemetry/auto-instrumentations-node/register'
 import {fastify }from 'fastify'
 import { randomUUID } from 'node:crypto'
 import {fastifyCors} from '@fastify/cors'
+import { trace} from '@opentelemetry/api'
 import  {z} from 'zod'
 import{
     serializerCompiler,
@@ -43,7 +45,8 @@ app.post('/orders', {
             id: 'fbe56e35-e0bc-44be-b8b1-b9408034a9d6',
         }
     })
-    
+
+    trace.getActiveSpan()?.setAttribute('order_id', orderId)
 try {
     
         await db.insert(schema.orders).values({
@@ -54,6 +57,7 @@ try {
             
             
         })
+        
 } catch (error) {
     console.error(error)
 
